@@ -1,0 +1,47 @@
+---
+
+   # Upgrade Debian/Ubuntu based systems and reboot if necessary.
+# - name: Check if there are packages available to be installed/upgraded
+#   command: /usr/lib/update-notifier/apt-check --package-names
+#   register: packages
+#   tags: ["apt,update,packages"]
+#   changed_when: "'The following packages will be upgraded' in packages.stdout"
+#   when: ansible_os_family == 'Debian' and (ansible_distribution_major_version == '6' or ansible_distribution_major_version == '7')
+
+- name: Check if there are packages available to be installed/upgraded
+  command: apt-get -sV dist-upgrade
+  register: packages
+  tags: ["apt,update,packages"]
+  changed_when: "'The following packages will be upgraded' in packages.stdout"
+  when: ansible_os_family == 'Debian'
+
+- name: Upgrade all packages to the latest version
+  apt: update_cache=yes upgrade=dist
+  when: packages.stdout != ""
+  tags: ["apt,update,packages"]
+  sudo: true
+
+- name: Check if a reboot is required
+  register: rebootrequired
+  stat: path=/var/run/reboot-required get_md5=no
+
+
+- name: Restart server
+  command: shutdown -r now "Reboot triggered by Ansible"
+  async: 0
+  poll: 0
+  ignore_errors: true
+  when: (rebootrequired.stat.exists == true) and reboot_if_required
+  tags: ["apt,update,packages"]
+  sudo: true
+
+- name: Wait for server to restart
+  local_action:
+    module: wait_for
+    host: "{{ inventory_hostname }}"
+    port: "{{ ansible_ssh_port }}"
+    delay: 1
+    timeout: 300
+  sudo: false
+  when: (rebootrequired.stat.exists == true) and reboot_if_required
+  tags: ["apt,update,packages"]

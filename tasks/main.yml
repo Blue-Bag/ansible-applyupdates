@@ -1,0 +1,19 @@
+---
+# tasks file for ansible-applyupdates
+
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Default | Check for unsupported target operating system
+  fail:
+    msg: "The operating system of the target machine ({{ inventory_hostname }}) is not currently supported"
+  when: supported_os_family|default(False) == False
+
+- name: Include OS-specific Tasks.
+  include: update-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Include OS-specific Tasks.
+  include: update-Redhat.yml
+  when: ansible_os_family == 'RedHat'
+

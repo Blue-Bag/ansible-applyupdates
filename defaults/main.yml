@@ -1,0 +1,4 @@
+---
+# defaults file for ansible-applyupdates
+
+reboot_if_required: True

@@ -1,0 +1,8 @@
+---
+
+   # - name: Check if there are packages available to be installed/upgraded
+    #   command: yum --security check-update
+    #   register: packages
+    #   tags: ["postprovision"]
+    #   changed_when: packages.stdout != "The following packages will be upgraded"
+    #   when: ansible_os_family == 'RedHat'
