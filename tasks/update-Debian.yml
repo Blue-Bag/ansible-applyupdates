@@ -19,7 +19,7 @@
   apt: update_cache=yes upgrade=dist
   when: packages.stdout != ""
   tags: ["apt,update,packages"]
-  sudo: true
+  become: true
 
 - name: Check if a reboot is required
   register: rebootrequired
@@ -33,7 +33,7 @@
   ignore_errors: true
   when: (rebootrequired.stat.exists == true) and reboot_if_required
   tags: ["apt,update,packages"]
-  sudo: true
+  become: true
 
 - name: Wait for server to restart
   local_action:
