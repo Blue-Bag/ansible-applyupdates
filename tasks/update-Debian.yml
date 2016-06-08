@@ -42,6 +42,6 @@
     port: "{{ ansible_ssh_port }}"
     delay: 1
     timeout: 300
-  sudo: false
+  become: false
   when: (rebootrequired.stat.exists == true) and reboot_if_required
   tags: ["apt,update,packages"]
