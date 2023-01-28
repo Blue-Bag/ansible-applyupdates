@@ -10,10 +10,10 @@
   when: supported_os_family|default(False) == False
 
 - name: Include OS-specific Tasks.
-  include: update-Debian.yml
+  include_tasks: update-Debian.yml
   when: ansible_os_family == 'Debian'
 
 - name: Include OS-specific Tasks.
-  include: update-Redhat.yml
+  include_tasks: update-Redhat.yml
   when: ansible_os_family == 'RedHat'
 
